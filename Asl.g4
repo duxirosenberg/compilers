@@ -46,7 +46,7 @@ declarations
         ;
 
 variable_decl
-        : VAR ID ':' type
+        : VAR ID (COMMA ID)* COLON type 
         ;
 
 type    : INT

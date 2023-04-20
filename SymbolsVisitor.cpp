@@ -105,15 +105,19 @@ antlrcpp::Any SymbolsVisitor::visitDeclarations(AslParser::DeclarationsContext *
 
 antlrcpp::Any SymbolsVisitor::visitVariable_decl(AslParser::Variable_declContext *ctx) {
   DEBUG_ENTER();
-  visit(ctx->type());
-  std::string ident = ctx->ID()->getText();
-  if (Symbols.findInCurrentScope(ident)) {
-    Errors.declaredIdent(ctx->ID());
+  visit(ctx->type()); //all variables have the same type
+  
+  for(auto ctxID : ctx->ID()){
+    std::string ident = ctxID->getText();
+    if (Symbols.findInCurrentScope(ident)) {
+      Errors.declaredIdent(ctxID);
+    } 
+    else {
+      TypesMgr::TypeId t1 = getTypeDecor(ctx->type());
+      Symbols.addLocalVar(ident, t1);
+    }
   }
-  else {
-    TypesMgr::TypeId t1 = getTypeDecor(ctx->type());
-    Symbols.addLocalVar(ident, t1);
-  }
+
   DEBUG_EXIT();
   return 0;
 }
