@@ -173,6 +173,18 @@ public:
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
+  class  WhileStmtContext : public StatementContext {
+  public:
+    WhileStmtContext(StatementContext *ctx);
+
+    antlr4::tree::TerminalNode *WHILE();
+    ExprContext *expr();
+    antlr4::tree::TerminalNode *DO();
+    StatementsContext *statements();
+    antlr4::tree::TerminalNode *ENDWHILE();
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
   class  IfStmtContext : public StatementContext {
   public:
     IfStmtContext(StatementContext *ctx);
@@ -180,8 +192,10 @@ public:
     antlr4::tree::TerminalNode *IF();
     ExprContext *expr();
     antlr4::tree::TerminalNode *THEN();
-    StatementsContext *statements();
+    std::vector<StatementsContext *> statements();
+    StatementsContext* statements(size_t i);
     antlr4::tree::TerminalNode *ENDIF();
+    antlr4::tree::TerminalNode *ELSE();
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
@@ -202,6 +216,15 @@ public:
     Left_exprContext *left_expr();
     antlr4::tree::TerminalNode *ASSIGN();
     ExprContext *expr();
+    antlr4::tree::TerminalNode *SEMICOLON();
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  ReturnStmtContext : public StatementContext {
+  public:
+    ReturnStmtContext(StatementContext *ctx);
+
+    antlr4::tree::TerminalNode *RETURN();
     antlr4::tree::TerminalNode *SEMICOLON();
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };

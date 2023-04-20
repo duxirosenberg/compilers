@@ -47,7 +47,15 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitWhileStmt(AslParser::WhileStmtContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitProcCall(AslParser::ProcCallContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitReturnStmt(AslParser::ReturnStmtContext *ctx) override {
     return visitChildren(ctx);
   }
 

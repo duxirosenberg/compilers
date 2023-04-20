@@ -81,6 +81,7 @@ public:
   antlrcpp::Any visitIdent(AslParser::IdentContext *ctx);
 
   //NEW
+  antlrcpp::Any visitWhileStmt(AslParser::WhileStmtContext *ctx);
   antlrcpp::Any visitParenthesis(AslParser::ParenthesisContext *ctx);
   antlrcpp::Any visitUnary(AslParser::UnaryContext *ctx);
   antlrcpp::Any visitLogical(AslParser::LogicalContext *ctx);
