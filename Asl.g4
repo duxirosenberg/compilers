@@ -38,7 +38,11 @@ program : function+ EOF
 
 // A function has a name, a list of parameters and a list of statements
 function
-        : FUNC ID '(' ')' declarations statements ENDFUNC
+        : FUNC ID '(' parameters ')' (COLON type)? declarations statements ENDFUNC
+        ;
+
+parameters
+        : (ID COLON type (COMMA ID COLON type)*)?
         ;
 
 declarations
@@ -48,6 +52,8 @@ declarations
 variable_decl
         : VAR ID (COMMA ID)* COLON type 
         ;
+
+//chkpt1 new types declared, had to change visitType in SymbolsVisitor
 
 type    : INT
         | FLOAT
@@ -70,7 +76,7 @@ statement
           // A function/procedure call has a list of arguments in parenthesis (possibly empty)
         | ident '(' ')' ';'                   # procCall
         //Return
-        | RETURN ';'                         #returnStmt
+        | RETURN expr? ';'                         #returnStmt
           // Read a variable
         | READ left_expr ';'                  # readStmt
           // Write an expression
