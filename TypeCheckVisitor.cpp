@@ -175,6 +175,7 @@ antlrcpp::Any TypeCheckVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
     //Error1: not a callable function
     Errors.isNotCallable(ctx->ident());
   }else if (not Types.isErrorTy(t1)){
+  
     std::vector<TypesMgr::TypeId> params = Types.getFuncParamsTypes(t1);
     std::vector<AslParser::ExprContext *> args = ctx->expr();
     if (params.size() != args.size()) {
@@ -182,11 +183,13 @@ antlrcpp::Any TypeCheckVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
       Errors.numberOfParameters(ctx->ident());
     }else{
       for (unsigned int i = 0; i < params.size(); ++i) {
-        visit(args[i]);
         TypesMgr::TypeId t2 = getTypeDecor(args[i]);
-        if ((not Types.isErrorTy(t2)) and (not Types.copyableTypes(params[i], t2)))
+        if ( (not Types.equalTypes(params[i], t2)))
           //Error3: incompatible parameter
-          Errors.incompatibleParameter(ctx->expr(i), i+1, ctx);
+          //Type coercion
+          if (not (Types.isIntegerTy(t2) and Types.isFloatTy(params[i]))){
+            Errors.incompatibleParameter(ctx->expr(i), i+1, ctx);
+          }
       }
     }
   }
@@ -476,14 +479,13 @@ antlrcpp::Any TypeCheckVisitor::visitFunctionCall(AslParser::FunctionCallContext
   //Error1: is it not a function
   if (not Types.isErrorTy(t1) and not Types.isFunctionTy(t1)){
     Errors.isNotCallable(ctx->ident());
-    t2 = Types.createErrorTy();
   }else if(Types.isFunctionTy(t1)){
     t2 = Types.getFuncReturnType(t1);
     //Error2: function return value is not usable
     if(Types.isVoidFunction(t1)){
       Errors.isNotFunction(ctx->ident());
       t2 = Types.createErrorTy();
-    };
+    }
     
     //error3: wrong number of parameters
     if((ctx->expr().size() != Types.getNumOfParameters(t1))){
@@ -495,10 +497,13 @@ antlrcpp::Any TypeCheckVisitor::visitFunctionCall(AslParser::FunctionCallContext
         visit(ctx->expr(i));
         TypesMgr::TypeId t_temp = getTypeDecor(ctx->expr(i));
 
-        if(not Types.equalTypes(t_temp,parameters[i]) and not Types.isErrorTy(t_temp) \
-          and Types.isFloatTy(parameters[i]) and not Types.isIntegerTy(t_temp)){
-          Errors.incompatibleParameter(ctx->expr(i),i+1,ctx);
+        if(not Types.equalTypes(t_temp,parameters[i])){
+          if(not (Types.isErrorTy(t_temp)) and \
+          not (Types.isFloatTy(parameters[i]) and not Types.isIntegerTy(t_temp))){
+            Errors.incompatibleParameter(ctx->expr(i),i+1,ctx);
+          }
         }
+        
       }
     }
 

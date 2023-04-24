@@ -84,7 +84,7 @@ statement
         //whileloop
         | WHILE expr DO statements ENDWHILE                     #whileStmt
           // A function/procedure call has a list of arguments in parenthesis (possibly empty)
-        | ident '(' (expr (COMMA expr)*)? ')' ';'                                     # procCall
+        | ident '(' (expr (COMMA expr)*)? ')' ';'               #procCall
         //Return
         | RETURN expr? ';'                                      #returnStmt
           // Read a variable
