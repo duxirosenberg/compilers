@@ -57,6 +57,8 @@ public:
 
     virtual antlrcpp::Any visitRelational(AslParser::RelationalContext *context) = 0;
 
+    virtual antlrcpp::Any visitArrayAccess(AslParser::ArrayAccessContext *context) = 0;
+
     virtual antlrcpp::Any visitUnary(AslParser::UnaryContext *context) = 0;
 
     virtual antlrcpp::Any visitParenthesis(AslParser::ParenthesisContext *context) = 0;

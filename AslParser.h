@@ -12,13 +12,14 @@
 class  AslParser : public antlr4::Parser {
 public:
   enum {
-    ASSIGN = 1, PLUS = 2, SUB = 3, MUL = 4, DIV = 5, MOD = 6, VAR = 7, INT = 8, 
-    FLOAT = 9, CHAR = 10, BOOL = 11, EQ = 12, NEQ = 13, G = 14, GE = 15, 
-    L = 16, LE = 17, AND = 18, NOT = 19, OR = 20, INTVAL = 21, FLOATVAL = 22, 
-    BOOLVAL = 23, CHARVAL = 24, IF = 25, THEN = 26, ELSE = 27, ENDIF = 28, 
-    FUNC = 29, ENDFUNC = 30, READ = 31, WRITE = 32, WHILE = 33, DO = 34, 
-    ENDWHILE = 35, RETURN = 36, ID = 37, STRING = 38, COMMENT = 39, WS = 40, 
-    LPAR = 41, RPAR = 42, SEMICOLON = 43, COLON = 44, COMMA = 45
+    T__0 = 1, T__1 = 2, ASSIGN = 3, PLUS = 4, SUB = 5, MUL = 6, DIV = 7, 
+    MOD = 8, VAR = 9, INT = 10, FLOAT = 11, CHAR = 12, BOOL = 13, EQ = 14, 
+    NEQ = 15, G = 16, GE = 17, L = 18, LE = 19, AND = 20, NOT = 21, OR = 22, 
+    INTVAL = 23, FLOATVAL = 24, BOOLVAL = 25, CHARVAL = 26, IF = 27, THEN = 28, 
+    ELSE = 29, ENDIF = 30, FUNC = 31, ENDFUNC = 32, READ = 33, WRITE = 34, 
+    WHILE = 35, DO = 36, ENDWHILE = 37, RETURN = 38, ID = 39, STRING = 40, 
+    COMMENT = 41, WS = 42, LPAR = 43, RPAR = 44, SEMICOLON = 45, COLON = 46, 
+    COMMA = 47
   };
 
   enum {
@@ -270,6 +271,7 @@ public:
     Left_exprContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     IdentContext *ident();
+    ExprContext *expr();
 
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
    
@@ -326,6 +328,15 @@ public:
     antlr4::tree::TerminalNode *GE();
     antlr4::tree::TerminalNode *L();
     antlr4::tree::TerminalNode *LE();
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  ArrayAccessContext : public ExprContext {
+  public:
+    ArrayAccessContext(ExprContext *ctx);
+
+    IdentContext *ident();
+    ExprContext *expr();
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 

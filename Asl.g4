@@ -87,12 +87,14 @@ statement
 
 // Grammar for left expressions (l-values in C++)
 left_expr
-        : ident
+        : ident 
+        | ident '[' expr ']'
         ;
 
 // Grammar for expressions with boolean, relational and aritmetic operators
 // Grammar for expressions with boolean, relational and aritmetic operators
 expr    : LPAR expr RPAR                      # parenthesis
+        | ident '[' expr ']'                  # arrayAccess
         | op= (NOT|PLUS|SUB) expr             # unary
         | expr op=(MUL|DIV|MOD) expr          # arithmetic
         | expr op=(PLUS|SUB) expr             # arithmetic

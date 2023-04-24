@@ -91,6 +91,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitArrayAccess(AslParser::ArrayAccessContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitUnary(AslParser::UnaryContext *ctx) override {
     return visitChildren(ctx);
   }

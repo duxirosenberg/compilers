@@ -85,7 +85,8 @@ public:
   antlrcpp::Any visitParenthesis(AslParser::ParenthesisContext *ctx);
   antlrcpp::Any visitUnary(AslParser::UnaryContext *ctx);
   antlrcpp::Any visitLogical(AslParser::LogicalContext *ctx);
-  
+  antlrcpp::Any visitArrayAccess(AslParser::ArrayAccessContext *ctx);
+
 
 private:
 
