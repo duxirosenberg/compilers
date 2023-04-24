@@ -154,11 +154,30 @@ antlrcpp::Any TypeCheckVisitor::visitIfStmt(AslParser::IfStmtContext *ctx) {
 antlrcpp::Any TypeCheckVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
   DEBUG_ENTER();
   visit(ctx->ident());
+  //visit every parameter
+  for (auto expr : ctx->expr()) {
+    visit(expr);
+  }
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
-  if (Types.isErrorTy(t1)) {
-    ;
-  } else if (not Types.isFunctionTy(t1)) {
+
+  if (not Types.isFunctionTy(t1) and not Types.isErrorTy(t1)) {
+    //Error1: not a callable function
     Errors.isNotCallable(ctx->ident());
+  }else if (not Types.isErrorTy(t1)){
+    std::vector<TypesMgr::TypeId> params = Types.getFuncParamsTypes(t1);
+    std::vector<AslParser::ExprContext *> args = ctx->expr();
+    if (params.size() != args.size()) {
+      //Error2: number of parameters mismatch
+      Errors.numberOfParameters(ctx->ident());
+    }else{
+      for (unsigned int i = 0; i < params.size(); ++i) {
+        visit(args[i]);
+        TypesMgr::TypeId t2 = getTypeDecor(args[i]);
+        if ((not Types.isErrorTy(t2)) and (not Types.copyableTypes(params[i], t2)))
+          //Error3: incompatible parameter
+          Errors.incompatibleParameter(ctx->expr(i), i+1, ctx);
+      }
+    }
   }
   DEBUG_EXIT();
   return 0;

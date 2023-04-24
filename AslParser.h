@@ -184,6 +184,10 @@ public:
     antlr4::tree::TerminalNode *LPAR();
     antlr4::tree::TerminalNode *RPAR();
     antlr4::tree::TerminalNode *SEMICOLON();
+    std::vector<ExprContext *> expr();
+    ExprContext* expr(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> COMMA();
+    antlr4::tree::TerminalNode* COMMA(size_t i);
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
