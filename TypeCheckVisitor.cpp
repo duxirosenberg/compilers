@@ -440,16 +440,42 @@ antlrcpp::Any TypeCheckVisitor::visitFunctionCall(AslParser::FunctionCallContext
   DEBUG_ENTER();
   visit(ctx->ident());
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
-  putTypeDecor(ctx, t1);
-  putIsLValueDecor(ctx, false);  
+  TypesMgr::TypeId t2 = Types.createErrorTy();
+
   
-  /*
-    std::vector<ExprContext *> expr();
-    ExprContext* expr(size_t i);
-    std::vector<antlr4::tree::TerminalNode *> COMMA();
-    antlr4::tree::TerminalNode* COMMA(size_t i);
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  */
+  //Error1: is it not a function
+  if (not Types.isErrorTy(t1) and not Types.isFunctionTy(t1)){
+    Errors.isNotCallable(ctx->ident());
+    t2 = Types.createErrorTy();
+  }else if(Types.isFunctionTy(t1)){
+    t2 = Types.getFuncReturnType(t1);
+    //Error2: function return value is not usable
+    if(Types.isVoidFunction(t1)){
+      Errors.isNotFunction(ctx->ident());
+      t2 = Types.createErrorTy();
+    };
+    
+    //error3: wrong number of parameters
+    if((ctx->expr().size() != Types.getNumOfParameters(t1))){
+        Errors.numberOfParameters(ctx->ident());
+    } else{
+      std::vector<TypesMgr::TypeId> parameters = Types.getFuncParamsTypes(t1);
+      int len = parameters.size();
+      for(int i = 0; i < len; i++){
+        visit(ctx->expr(i));
+        TypesMgr::TypeId t_temp = getTypeDecor(ctx->expr(i));
+
+        if(not Types.equalTypes(t_temp,parameters[i]) and not Types.isErrorTy(t_temp) \
+          and Types.isFloatTy(parameters[i]) and not Types.isIntegerTy(t_temp)){
+          Errors.incompatibleParameter(ctx->expr(i),i+1,ctx);
+        }
+      }
+    }
+
+  }
+  
+  putTypeDecor(ctx, t2);
+  putIsLValueDecor(ctx, false);  
   DEBUG_EXIT();
   return 0;
 }
