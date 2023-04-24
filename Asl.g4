@@ -38,7 +38,7 @@ program : function+ EOF
 
 // A function has a name, a list of parameters and a list of statements
 function
-        : FUNC ID '(' parameters ')' (COLON type)? declarations statements ENDFUNC
+        : FUNC ID '(' parameters ')' (COLON basic_type)? declarations statements ENDFUNC
         ;
 
 parameters
@@ -55,10 +55,20 @@ variable_decl
 
 //chkpt1 new types declared, had to change visitType in SymbolsVisitor
 
-type    : INT
+type
+        : basic_type
+        | array_type
+        ;
+
+basic_type    
+        : INT
         | FLOAT
         | CHAR
         | BOOL
+        ;
+
+array_type
+        : ARRAY '[' INTVAL ']' 'of' basic_type
         ;
 
 statements
@@ -122,6 +132,7 @@ DIV       : '/';
 MOD       : '%';
 
 VAR       : 'var';
+ARRAY     : 'array';
 INT       : 'int';
 //NEW
 FLOAT     : 'float';
