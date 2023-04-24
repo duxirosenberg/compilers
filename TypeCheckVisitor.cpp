@@ -84,6 +84,17 @@ antlrcpp::Any TypeCheckVisitor::visitProgram(AslParser::ProgramContext *ctx) {
 
 antlrcpp::Any TypeCheckVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   DEBUG_ENTER();
+
+  //set function type
+  std::vector<TypesMgr::TypeId> paramTypes;
+  TypesMgr::TypeId t1 = Types.createVoidTy();
+  if (ctx->basic_type()) {
+    t1 = getTypeDecor(ctx->basic_type());
+  }  
+  TypesMgr::TypeId t2 = Types.createFunctionTy(paramTypes,t1);
+  setCurrentFunctionTy(t2);
+
+
   SymTable::ScopeId sc = getScopeDecor(ctx);
   Symbols.pushThisScope(sc);
   // Symbols.print();
@@ -498,6 +509,38 @@ antlrcpp::Any TypeCheckVisitor::visitFunctionCall(AslParser::FunctionCallContext
   DEBUG_EXIT();
   return 0;
 }
+
+
+antlrcpp::Any TypeCheckVisitor::visitReturnStmt(AslParser::ReturnStmtContext *ctx){
+  DEBUG_ENTER();
+  TypesMgr::TypeId t1 = getCurrentFunctionTy();
+  if (ctx->expr()){
+    visit(ctx->expr());
+    TypesMgr::TypeId t2 = getTypeDecor(ctx->expr());
+    TypesMgr::TypeId t3 = Types.getFuncReturnType(t1);; 
+  
+    if(not Types.equalTypes(t2,t3) and not Types.isErrorTy(t2) and not Types.isErrorTy(t3)){
+      if(not(Types.isFloatTy(t3) and Types.isIntegerTy(t2))){
+        Errors.incompatibleReturn(ctx->RETURN());
+      }
+    }
+  }
+  else{
+    if(not Types.isVoidFunction(t1)){
+      Errors.incompatibleReturn(ctx->RETURN());
+    }
+  }
+  
+  DEBUG_EXIT();
+  return 0;
+}
+
+
+
+
+
+
+
 
 
 // Getters for the necessary tree node atributes:
