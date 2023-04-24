@@ -94,6 +94,7 @@ left_expr
 // Grammar for expressions with boolean, relational and aritmetic operators
 // Grammar for expressions with boolean, relational and aritmetic operators
 expr    : LPAR expr RPAR                      # parenthesis
+        | ident '(' (expr (COMMA expr)*)? ')' # functionCall
         | ident '[' expr ']'                  # arrayAccess
         | op= (NOT|PLUS|SUB) expr             # unary
         | expr op=(MUL|DIV|MOD) expr          # arithmetic
