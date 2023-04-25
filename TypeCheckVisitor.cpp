@@ -315,14 +315,24 @@ antlrcpp::Any TypeCheckVisitor::visitArithmetic(AslParser::ArithmeticContext *ct
 antlrcpp::Any TypeCheckVisitor::visitRelational(AslParser::RelationalContext *ctx) {
   DEBUG_ENTER();
   visit(ctx->expr(0));
-  TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
   visit(ctx->expr(1));
+
+  TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
   std::string oper = ctx->op->getText();
   if ((not Types.isErrorTy(t1)) and (not Types.isErrorTy(t2)) and
       (not Types.comparableTypes(t1, t2, oper)))
     Errors.incompatibleOperator(ctx->op);
   TypesMgr::TypeId t = Types.createBooleanTy();
+
+/*     //DEBUG
+  std::cout <<  "   " << std::endl;
+  std::cout << "Relational operator: " << ctx->op->getText() << std::endl;
+  std::cout << "t1: " << Types.to_string(t1) << std::endl;
+  std::cout << "t2: " << Types.to_string(t2) << std::endl;
+  std::cout << "return type: " << Types.to_string(t) << std::endl;
+ 
+ */
   putTypeDecor(ctx, t);
   putIsLValueDecor(ctx, false);
   DEBUG_EXIT();
@@ -408,20 +418,18 @@ antlrcpp::Any TypeCheckVisitor::visitUnary(AslParser::UnaryContext *ctx){
     else{
       t1 = Types.createBooleanTy();
     }
-  }
-  else{
+  }else{
+    //operator is SUB or PLUS
     if(not Types.isErrorTy(t1) and not Types.isNumericTy(t1)){
       Errors.incompatibleOperator(ctx->op);
     }
-    else{
-      if(Types.isFloatTy(t1)){
-        t1 = Types.createFloatTy();
-      }
-      else{
-        t1 = Types.createIntegerTy();
-      }
+    if(Types.isFloatTy(t1)){
+      t1 = Types.createFloatTy();
+    }else{
+      t1 = Types.createIntegerTy();
     }
   }
+  
   
   putTypeDecor(ctx, t1);
   putIsLValueDecor(ctx, false);
@@ -440,6 +448,15 @@ antlrcpp::Any TypeCheckVisitor::visitLogical(AslParser::LogicalContext *ctx){
      ((not Types.isErrorTy(t2)) and (not Types.isBooleanTy(t2))))
     Errors.incompatibleOperator(ctx->op);
   TypesMgr::TypeId t = Types.createBooleanTy();
+
+ /*  //DEBUG
+  std::cout <<  "   " << std::endl;
+  std::cout << "Logical operator: " << ctx->op->getText() << std::endl;
+  std::cout << "t1: " << Types.to_string(t1) << std::endl;
+  std::cout << "t2: " << Types.to_string(t2) << std::endl;
+  std::cout << "return type: " << Types.to_string(t) << std::endl;
+
+ */
   putTypeDecor(ctx, t);
   putIsLValueDecor(ctx, false);
   DEBUG_EXIT();
@@ -486,7 +503,7 @@ antlrcpp::Any TypeCheckVisitor::visitArrayAccess(AslParser::ArrayAccessContext *
 }
 
 
-//DEBUG
+/* //DEBUG
 void printVector(const std::vector<long unsigned int>& vec, const TypesMgr& Types ) {
     std::cout << "[";
     for (size_t i = 0; i < vec.size(); ++i) {
@@ -508,6 +525,7 @@ void printActualParameters(const std::vector<AslParser::ExprContext*>& params,Ty
     }
     std::cout << "]";
 }
+ */
 
 
 antlrcpp::Any TypeCheckVisitor::visitFunctionCall(AslParser::FunctionCallContext *ctx){
@@ -576,6 +594,7 @@ antlrcpp::Any TypeCheckVisitor::visitFunctionCall(AslParser::FunctionCallContext
     }
     
   }
+
 
   
   
