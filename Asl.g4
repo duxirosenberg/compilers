@@ -104,8 +104,8 @@ left_expr
 // Grammar for expressions with boolean, relational and aritmetic operators
 // Grammar for expressions with boolean, relational and aritmetic operators
 expr    : LPAR expr RPAR                      # parenthesis
-        | ident '(' (expr (COMMA expr)*)? ')' # functionCall
         | ident '[' expr ']'                  # arrayAccess
+        | ident '(' (expr (COMMA expr)*)? ')' # functionCall
         | op= (NOT|PLUS|SUB) expr             # unary
         | expr op=(MUL|DIV|MOD) expr          # arithmetic
         | expr op=(PLUS|SUB) expr             # arithmetic
@@ -152,12 +152,6 @@ AND       : 'and';
 NOT       : 'not';
 OR        : 'or';
 
-INTVAL    : ('0'..'9')+ ;
-//NEW
-FLOATVAL  : ('0'..'9')+ '.' ('0'..'9')+ ;
-BOOLVAL   : ('true'|'false') ;
-CHARVAL   : '\'' ('a'..'z'|'A'..'Z'|'0'..'9'|'_'|' ') '\'' ; //todo more chars lateorn
-
 
 IF        : 'if' ;
 THEN      : 'then' ;
@@ -171,6 +165,20 @@ WHILE     : 'while' ;
 DO        : 'do';
 ENDWHILE  : 'endwhile';
 RETURN    : 'return';
+
+LPAR : '(' ;
+RPAR : ')' ;
+SEMICOLON : ';' ;
+COLON : ':';
+COMMA : ',';
+
+INTVAL    : ('0'..'9')+ ;
+//NEW
+FLOATVAL  : ('0'..'9')+ '.' ('0'..'9')+ ;
+BOOLVAL   : ('true'|'false') ;
+CHARVAL   : '\'' ('a'..'z'|'A'..'Z'|'0'..'9'|'_'|' ') '\'' ; //todo more chars lateorn
+
+
 
 ID        : ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
 
@@ -190,8 +198,3 @@ WS        : (' '|'\t'|'\r'|'\n')+ -> skip ;
 // Alternative description
 // WS        : [ \t\r\n]+ -> skip ;
 
-LPAR : '(' ;
-RPAR : ')' ;
-SEMICOLON : ';' ;
-COLON : ':';
-COMMA : ',';

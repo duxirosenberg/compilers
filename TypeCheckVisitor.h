@@ -89,6 +89,8 @@ public:
   antlrcpp::Any visitFunctionCall(AslParser::FunctionCallContext *ctx);
   antlrcpp::Any visitReturnStmt(AslParser::ReturnStmtContext *ctx);
 
+  TypesMgr::TypeId  getTypeDecor     (antlr4::ParserRuleContext *ctx);
+
 
 
 private:
@@ -108,7 +110,8 @@ private:
   // Getters for the necessary tree node atributes:
   //   Scope, Type ans IsLValue
   SymTable::ScopeId getScopeDecor    (antlr4::ParserRuleContext *ctx);
-  TypesMgr::TypeId  getTypeDecor     (antlr4::ParserRuleContext *ctx);
+//gettypedcor
+
   bool              getIsLValueDecor (antlr4::ParserRuleContext *ctx);
 
   // Setters for the necessary tree node attributes:

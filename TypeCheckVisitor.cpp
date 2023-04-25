@@ -469,45 +469,98 @@ antlrcpp::Any TypeCheckVisitor::visitArrayAccess(AslParser::ArrayAccessContext *
 }
 
 
+//DEBUG
+void printVector(const std::vector<long unsigned int>& vec, const TypesMgr& Types ) {
+    std::cout << "[";
+    for (size_t i = 0; i < vec.size(); ++i) {
+        std::cout << Types.to_string(vec[i]);
+        if (i < vec.size() - 1) {
+            std::cout << ", ";
+        }
+    }
+    std::cout << "]";
+}
+
+void printActualParameters(const std::vector<AslParser::ExprContext*>& params,TypeCheckVisitor visitor, const TypesMgr& Types) {
+    std::cout << "[";
+    for (size_t i = 0; i < params.size(); ++i) {
+        std::cout << Types.to_string(visitor.getTypeDecor(params[i]));
+        if (i < params.size() - 1) {
+            std::cout << ", ";
+        }
+    }
+    std::cout << "]";
+}
+
+
 antlrcpp::Any TypeCheckVisitor::visitFunctionCall(AslParser::FunctionCallContext *ctx){
   DEBUG_ENTER();
   visit(ctx->ident());
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
   TypesMgr::TypeId t2 = Types.createErrorTy();
 
-  
+/*
+  std::cout << "FunctionCall: " << ctx->ident()->getText() << std::endl;
+  std::cout << "     Type: " << Types.to_string(t1) << std::endl;
+  std::cout << "     IsFunction: " << Types.isFunctionTy(t1) << std::endl;
+  //if function print return type
+  if(Types.isFunctionTy(t1)){
+    std::cout << "     Function Formal type: ";
+    printVector(Types.getFuncParamsTypes(t1),Types);
+    std::cout << std::endl;
+  }
+  //print parameters
+  std::cout << "     Actual Parameters: ";
+  printActualParameters(ctx->expr(),*this, Types);
+  std::cout << std::endl;
+*/
+
   //Error1: is it not a function
   if (not Types.isErrorTy(t1) and not Types.isFunctionTy(t1)){
     Errors.isNotCallable(ctx->ident());
-  }else if(Types.isFunctionTy(t1)){
+  } 
+
+  if(Types.isFunctionTy(t1)){
     t2 = Types.getFuncReturnType(t1);
     //Error2: function return value is not usable
     if(Types.isVoidFunction(t1)){
       Errors.isNotFunction(ctx->ident());
       t2 = Types.createErrorTy();
     }
-    
-    //error3: wrong number of parameters
-    if((ctx->expr().size() != Types.getNumOfParameters(t1))){
-        Errors.numberOfParameters(ctx->ident());
-    } else{
-      std::vector<TypesMgr::TypeId> parameters = Types.getFuncParamsTypes(t1);
-      int len = parameters.size();
-      for(int i = 0; i < len; i++){
-        visit(ctx->expr(i));
-        TypesMgr::TypeId t_temp = getTypeDecor(ctx->expr(i));
+  }
+  
+  //no matter if function or not, check the parameters
+  for(auto expr : ctx->expr()){
+    visit(expr);
+  }
 
-        if(not Types.equalTypes(t_temp,parameters[i])){
-          if(not (Types.isErrorTy(t_temp)) and \
-          not (Types.isFloatTy(parameters[i]) and not Types.isIntegerTy(t_temp))){
+  //if this is a function, check compatibility
+  if(Types.isFunctionTy(t1)){
+    //error3: wrong number of parameters
+    if(((ctx->expr()).size() != Types.getNumOfParameters(t1))){
+        Errors.numberOfParameters(ctx->ident());
+    }else{
+      std::vector<TypesMgr::TypeId> formalParams = Types.getFuncParamsTypes(t1);
+
+      //std::cout << "FunctionCall: " << ctx->ident()->getText() << std::endl;
+      for(unsigned int i = 0; i < formalParams.size(); i++){
+        TypesMgr::TypeId actual_type = getTypeDecor(ctx->expr(i));
+        TypesMgr::TypeId formal_type = formalParams[i];
+        //DEBUG
+        //std::cout << "     Actual Type: " << Types.to_string(actual_type) << std::endl;
+        //std::cout << "     Formal Type: " << Types.to_string(formal_type) << std::endl;
+
+        if(not Types.isErrorTy(actual_type) and not Types.equalTypes(formal_type,actual_type)){
+          if(not (Types.isFloatTy(formal_type) and  Types.isIntegerTy(actual_type))){
             Errors.incompatibleParameter(ctx->expr(i),i+1,ctx);
           }
         }
-        
-      }
+      } 
     }
-
+    
   }
+
+  
   
   putTypeDecor(ctx, t2);
   putIsLValueDecor(ctx, false);  
