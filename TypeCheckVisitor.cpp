@@ -276,20 +276,37 @@ antlrcpp::Any TypeCheckVisitor::visitArithmetic(AslParser::ArithmeticContext *ct
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
   visit(ctx->expr(1));
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
-  if (((not Types.isErrorTy(t1)) and (not Types.isNumericTy(t1))) or
-      ((not Types.isErrorTy(t2)) and (not Types.isNumericTy(t2))))
+  TypesMgr::TypeId t = Types.createIntegerTy();
+
+  if(ctx->MOD()){
+    if (((not Types.isErrorTy(t1)) and (not Types.isIntegerTy(t1))) or
+      ((not Types.isErrorTy(t2)) and (not Types.isIntegerTy(t2))))
     Errors.incompatibleOperator(ctx->op);
-  
-  //type coercion
-  if (Types.isFloatTy(t1) or Types.isFloatTy(t2)) {
-    TypesMgr::TypeId t = Types.createFloatTy();
-    putTypeDecor(ctx, t);
-  }
-  else {
-    TypesMgr::TypeId t = Types.createIntegerTy();
-    putTypeDecor(ctx, t);
+    else{
+      t = Types.createIntegerTy();
+    }
+  }else{
+    if (((not Types.isErrorTy(t1)) and (not Types.isNumericTy(t1))) or
+        ((not Types.isErrorTy(t2)) and (not Types.isNumericTy(t2))))
+      Errors.incompatibleOperator(ctx->op);
+    //type coercion
+    if (Types.isFloatTy(t1) or Types.isFloatTy(t2)) {
+      t = Types.createFloatTy();
+    }else {
+      t = Types.createIntegerTy();
+    }
   }
 
+
+/* 
+   //DEBUG
+  std::cout <<  "   " << std::endl;
+  std::cout << "Arithmetic operator: " << ctx->op->getText() << std::endl;
+  std::cout << "t1: " << Types.to_string(t1) << std::endl;
+  std::cout << "t2: " << Types.to_string(t2) << std::endl;
+  std::cout << "return type: " << Types.to_string(t) << std::endl;
+  */
+  putTypeDecor(ctx, t);
   putIsLValueDecor(ctx, false);
   DEBUG_EXIT();
   return 0;
