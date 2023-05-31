@@ -176,8 +176,7 @@ INTVAL    : ('0'..'9')+ ;
 //NEW
 FLOATVAL  : ('0'..'9')+ '.' ('0'..'9')+ ;
 BOOLVAL   : ('true'|'false') ;
-CHARVAL   : '\'' ('a'..'z'|'A'..'Z'|'0'..'9'|'_'|' ') '\'' ; //todo more chars lateorn
-
+CHARVAL   : '\'' ( ESC_SEQ | ~('\\'|'\'')) '\'' ;
 
 
 ID        : ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;

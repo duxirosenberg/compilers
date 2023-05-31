@@ -1,51 +1,45 @@
 function main
   vars
-    a integer
-    b integer
+    n integer
+    f integer
+    aux integer
     end boolean
-    pi float
   endvars
 
-   %1 = 12
-   a = %1
-   %2 = 5
-   %3 = a * %2
-   %4 = 1
-   %5 = a + %4
-   %6 = a * %5
-   %7 = %3 + %6
-   b = %7
-   %8 = b < a
-   %8 = not %8
-   %9 = 0
-   %10 = a == %9
-   %11 = not %10
-   %12 = %8 and %11
-   end = %12
-   %13 = 3.3
-   %14 = 1
-   %15 = %14 / a
-   %17 = float %15
-   %16 = %13 +. %17
-   %18 = 2.0
-   %19 = -. %18
-   %21 = float a
-   %20 = %19 /. %21
-   %22 = %16 -. %20
-   pi = %22
-   %23 = a == b
-   %24 = %23 or end
-   writei %24
-   writes "\n"
-   %25 = a * b
-   writei %25
-   writes "\n"
-   %26 = 2
-   %28 = float %26
-   %27 = %28 *. pi
-   writef %27
-   writes "\n"
-   return
+     readi n
+     aux = n
+     %1 = 0
+     %2 = n < %1
+     ifFalse %2 goto endif1
+     writes "n >= 0!\n"
+     %3 = 1
+     end = %3
+  label endif1 :
+     %4 = 1
+     f = %4
+  label while1 :
+     %5 = not end
+     %6 = 1
+     %7 = n <= %6
+     %7 = not %7
+     %8 = %5 and %7
+     ifFalse %8 goto endwhile1
+     %9 = f * n
+     f = %9
+     %10 = 1
+     %11 = n - %10
+     n = %11
+     goto while1
+  label endwhile1 :
+     %12 = 0
+     %13 = end ==. %12
+     ifFalse %13 goto endif2
+     writei aux
+     writes "!="
+     writei f
+     writes "\n"
+  label endif2 :
+     return
 endfunction
 
 
