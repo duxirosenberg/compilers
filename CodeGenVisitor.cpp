@@ -240,10 +240,9 @@ antlrcpp::Any CodeGenVisitor::visitIfStmt(AslParser::IfStmtContext *ctx) {
 
 antlrcpp::Any CodeGenVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
   DEBUG_ENTER();
+
   instructionList code;
-  // std::string name = ctx->ident()->ID()->getSymbol()->getText();
   std::string name = ctx->ident()->getText();
-  code = instruction::CALL(name);
   TypesMgr::TypeId type = getTypeDecor(ctx->ident());
   auto typesParams = Types.getFuncParamsTypes(type);
 
@@ -264,11 +263,15 @@ antlrcpp::Any CodeGenVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
       auto temp = "%"+codeCounters.newTEMP();
       code = code || instruction::FLOAT(temp, addr_param);
     }
-    
-
-    pushParams = pushParams || instruction::PUSH(param_temp);
+  }  
+  
+  //return for non-void functions
+  if(not Types.isVoidTy(type)){
+    pushParams = pushParams || instruction::PUSH();
     popParams = popParams || instruction::POP();
   }
+  
+  code = code || pushParams || instruction::CALL(name) || popParams;
 
 
   DEBUG_EXIT();
