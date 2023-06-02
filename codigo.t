@@ -1,77 +1,96 @@
-function f1
+function f
   params
+    _result boolean
     a integer
-    b integer
+    b float
   endparams
 
   vars
-    c float
-    d integer
-    found boolean
+    x integer
+    y boolean
+    z integer 10
   endvars
 
-     %1 = 0
-     found = %1
-     %2 = 0.7
-     %4 = float a
-     %3 = %4 +. %2
-     c = %3
-     %5 = 0
-     d = %5
-     %6 = a + d
-     %7 = %6 <= c
-     %7 = not %7
-     %8 = not found
-     %9 = %7 or %8
-     ifFalse %9 goto endif1
+     %1 = 9
+     %2 = 67
+     %3 = a + %2
+     z[%1] = %3
+     %4 = 34
+     x = %4
+     %5 = 3
+     %6 = 56
+     %7 = 9
+     %8 = z[%7]
+     %9 = %6 + %8
+     z[%5] = %9
+     %10 = 3
+     %11 = z[%10]
+     %13 = float %11
+     %12 = %13 <=. b
+     %12 = not %12
+     ifFalse %12 goto else1
+     %14 = 78
+     x = %14
+     writef b
+     writes "\n"
+     goto endif1
+  label else1 :
+     %15 = 99
+     x = %15
+  label endif1 :
+     %16 = 3
+     %17 = z[%16]
+     writei %17
+     writes "\n"
+     %18 = 1
+     _result = %18
+     return
+endfunction
+
+function fz
+  params
+    r integer
+  endparams
+
   label while1 :
-     %10 = 0
-     %11 = b <= %10
-     %11 = not %11
-     ifFalse %11 goto endwhile1
-     %12 = 1
-     %13 = b - %12
-     b = %13
-     %14 = 1
-     found = %14
+     %1 = 0
+     %2 = r <= %1
+     %2 = not %2
+     ifFalse %2 goto endwhile1
+     %3 = 1
+     %4 = r - %3
+     r = %4
      goto while1
   label endwhile1 :
-  label endif1 :
-     %15 = 11
-     %16 = b <= %15
-     ifFalse %16 goto endif2
-     %17 = 2
-     %19 = float %17
-     %18 = %19 *. c
-     %20 = 1
-     %22 = float %20
-     %21 = %18 +. %22
-     c = %21
-  label endif2 :
-     writef c
-     writes "\n"
      return
 endfunction
 
 function main
   vars
     a integer
-    b integer
   endvars
 
-   %1 = 4
-   a = %1
-   %2 = 2
-   %3 = %2 * a
-   %4 = 1
-   %5 = %3 + %4
-   b = %5
-   %6 = 3
-   %7 = %6 + b
-   pushparam 
-   call f1
-   popparam 
-   return
+     %1 = 3
+     %2 = 2
+     %3 = float %2
+     pushparam 
+     pushparam %1
+     pushparam %3
+     call f
+     popparam 
+     popparam 
+     popparam %4
+     ifFalse %4 goto endif1
+     %5 = 3.7
+     %7 = float a
+     %6 = %7 +. %5
+     %8 = 4
+     %10 = float %8
+     %9 = %6 +. %10
+     writef %9
+     writes "\n"
+  label endif1 :
+     return
 endfunction
 
 
