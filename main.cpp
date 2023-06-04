@@ -93,7 +93,7 @@ int main(int argc, const char* argv[]) {
   }
 
   // print the parse tree (for debugging purposes)
-  // std::cout << tree->toStringTree(&parser) << std::endl;
+  //std::cout << tree->toStringTree(&parser) << std::endl;
 
   // auxililary classes we are going to need to store information while
   // traversing the tree. They are described below in this document

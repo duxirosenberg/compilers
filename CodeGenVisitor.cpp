@@ -452,6 +452,9 @@ antlrcpp::Any CodeGenVisitor::visitReadStmt(AslParser::ReadStmtContext *ctx) {
     code = code1 || instruction::READI(temp);
 
   if (isArrayElement) {
+
+
+    
     code = code || instruction::XLOAD(addr1,offs1,temp);
   }
   DEBUG_EXIT();
@@ -464,16 +467,15 @@ antlrcpp::Any CodeGenVisitor::visitWriteExpr(AslParser::WriteExprContext *ctx) {
   CodeAttribs     && codAt1 = visit(ctx->expr());
   std::string         addr1 = codAt1.addr;
   // std::string         offs1 = codAt1.offs;
-  instructionList &   code1 = codAt1.code;
-  instructionList &    code = code1;
+  instructionList &   code = codAt1.code;
   TypesMgr::TypeId tid1 = getTypeDecor(ctx->expr());
   
   if (Types.isFloatTy(tid1)) {
-    code = code1 || instruction::WRITEF(addr1);
+    code = code || instruction::WRITEF(addr1);
   } else if (Types.isCharacterTy(tid1)){
-    code = code1 || instruction::WRITEC(addr1);
+    code = code || instruction::WRITEC(addr1);
   } else {
-    code = code1 || instruction::WRITEI(addr1);
+    code = code || instruction::WRITEI(addr1);
   }
 
   DEBUG_EXIT();
@@ -741,7 +743,8 @@ antlrcpp::Any CodeGenVisitor::visitValue(AslParser::ValueContext *ctx) {
       code = instruction::ILOAD(temp, "0");
     }
   }else{ //charval
-    code = instruction::CHLOAD(temp, ctx->getText());
+    std::string token = ctx->getText();
+    code = instruction::CHLOAD(temp, token.substr(1,token.size()-2));
   }
   CodeAttribs codAts(temp, "", code);
   DEBUG_EXIT();
