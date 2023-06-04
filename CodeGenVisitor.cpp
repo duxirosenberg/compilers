@@ -120,6 +120,9 @@ antlrcpp::Any CodeGenVisitor::visitParameters(AslParser::ParametersContext *ctx)
     std::string id = ctx->ID(i)->getText();
     TypesMgr::TypeId tid = getTypeDecor(ctx->type(i));
     bool isArray = Types.isArrayTy(tid);
+    if(isArray){
+      tid = Types.getArrayElemType(tid);
+    }
     lparams.push_back(var(id, Types.to_string(tid), isArray));
   }
 
@@ -257,11 +260,18 @@ antlrcpp::Any CodeGenVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx)
         addr2 = tmp;
       }
 
-    //left expr can be an access to an array element a[i]
     if(ctx->left_expr()->expr()){
-      code = code || instruction::XLOAD(addr1,offs1,addr2);
-    }
-    else{
+      //left expr is array access a[i]
+      if(Symbols.isLocalVarClass(addr1)){
+        //local array
+        code = code || instruction::XLOAD(addr1, offs1, addr2);
+      }else{ //parameter
+        std::string temp2 = "%"+codeCounters.newTEMP();
+        code = code || instruction::LOAD(temp2, addr1)
+                    || instruction::XLOAD(temp2, offs1,addr2);
+      }
+    }else{
+      //left expr is a variable
       code = code || instruction::LOAD(addr1, addr2);
     }
   }
@@ -327,7 +337,7 @@ antlrcpp::Any CodeGenVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
   instructionList popParams;
 
   //return for non-void functions (some functions may not have return)
-  if(not Types.isVoidTy(type)){
+  if(not Types.isVoidFunction(type)){
     pushParams = pushParams || instruction::PUSH();
     popParams = popParams || instruction::POP();
   }
@@ -392,6 +402,10 @@ antlrcpp::Any CodeGenVisitor::visitFunctionCall(AslParser::FunctionCallContext *
     if(Types.isFloatTy(formal_type_param) && Types.isIntegerTy(actual_type_param)){
       param_temp = "%"+codeCounters.newTEMP();
       code = code || instruction::FLOAT(param_temp,addr_param);
+    }
+    if(Types.isArrayTy(formal_type_param)){
+      param_temp = "%"+codeCounters.newTEMP();
+      code = code || instruction::ALOAD(param_temp,addr_param);
     }
 
     pushParams = pushParams || instruction::PUSH(param_temp);
