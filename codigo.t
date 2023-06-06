@@ -1,179 +1,170 @@
-function read_chars
-  params
-    _result integer
-    a character array
-  endparams
-
-  vars
-    i integer
-  endvars
-
-     %1 = 0
-     i = %1
-  label while1 :
-     %2 = 10
-     %3 = i < %2
-     ifFalse %3 goto endwhile1
-     readc %4
-     %5 = a
-     %5[i] = %4
-     %7 = a
-     %6 = %7[i]
-     %8 = '.'
-     %9 = %6 == %8
-     %9 = not %9
-     ifFalse %9 goto else1
-     %10 = 1
-     %11 = i + %10
-     i = %11
-     goto endif1
-  label else1 :
-     _result = i
-  label endif1 :
-     goto while1
-  label endwhile1 :
-     %12 = 10
-     _result = %12
-     return
-endfunction
-
-function find_vowels
-  params
-    n integer
-    vc character array
-    vb boolean array
-  endparams
-
-  vars
-    c character
-  endvars
-
-  label while1 :
-     %1 = 0
-     %2 = n <= %1
-     %2 = not %2
-     ifFalse %2 goto endwhile1
-     %3 = 1
-     %4 = n - %3
-     %6 = vc
-     %5 = %6[%4]
-     c = %5
-     %7 = 1
-     %8 = n - %7
-     %9 = 'a'
-     %10 = c == %9
-     %11 = 'e'
-     %12 = c == %11
-     %13 = %10 or %12
-     %14 = 'i'
-     %15 = c == %14
-     %16 = %13 or %15
-     %17 = 'o'
-     %18 = c == %17
-     %19 = %16 or %18
-     %20 = 'u'
-     %21 = c == %20
-     %22 = %19 or %21
-     %23 = vb
-     %23[%8] = %22
-     %24 = 1
-     %25 = n - %24
-     n = %25
-     goto while1
-  label endwhile1 :
-     return
-endfunction
-
-function write_consonants
+function one
   params
     _result float
-    n integer
-    vc character array
-    vb boolean array
+  endparams
+
+   %1 = 1
+   %2 = %1
+   _result = %2
+   return
+   return
+endfunction
+
+function sort
+  params
+    v float array
   endparams
 
   vars
-    k float
+    i integer
+    j integer
+    jmin integer
+    aux float
+  endvars
+
+     %1 = 0
+     i = %1
+  label while2 :
+     %2 = 20
+     %3 = 1
+     %4 = %2 - %3
+     %5 = i < %4
+     ifFalse %5 goto endwhile2
+     jmin = i
+     %6 = 1
+     %7 = i + %6
+     j = %7
+  label while1 :
+     %8 = 20
+     %9 = j < %8
+     ifFalse %9 goto endwhile1
+     %11 = v
+     %10 = %11[j]
+     %13 = v
+     %12 = %13[jmin]
+     %14 = %10 <. %12
+     ifFalse %14 goto endif1
+     jmin = j
+  label endif1 :
+     %15 = 1
+     %16 = j + %15
+     j = %16
+     goto while1
+  label endwhile1 :
+     %17 = jmin == i
+     %17 = not %17
+     ifFalse %17 goto endif2
+     %19 = v
+     %18 = %19[i]
+     aux = %18
+     %21 = v
+     %20 = %21[jmin]
+     %22 = v
+     %22[i] = %20
+     %23 = v
+     %23[jmin] = aux
+  label endif2 :
+     %24 = 1
+     %25 = i + %24
+     i = %25
+     goto while2
+  label endwhile2 :
+     return
+endfunction
+
+function evenPositivesAndSort
+  params
+    v float array
+  endparams
+
+  vars
     i integer
   endvars
 
      %1 = 0
      i = %1
-     %2 = 0
-     %3 = float %2
-     k = %3
   label while1 :
-     %4 = i == n
-     %4 = not %4
-     ifFalse %4 goto endwhile1
-     %6 = vb
-     %5 = %6[i]
-     ifFalse %5 goto else1
-     %7 = 1
-     %9 = float %7
-     %8 = k +. %9
-     k = %8
-     goto endif1
-  label else1 :
-     %11 = vc
-     %10 = %11[i]
-     writec %10
+     %2 = 20
+     %3 = i < %2
+     ifFalse %3 goto endwhile1
+     %5 = v
+     %4 = %5[i]
+     %6 = 0
+     %8 = float %6
+     %7 = %4 <=. %8
+     %7 = not %7
+     ifFalse %7 goto endif1
+     pushparam 
+     call one
+     popparam %9
+     %10 = v
+     %10[i] = %9
   label endif1 :
-     %12 = 1
-     %13 = i + %12
-     i = %13
+     %11 = 1
+     %12 = i + %11
+     i = %12
      goto while1
   label endwhile1 :
-     %14 = '\n'
-     writec %14
-     %15 = 100
-     %17 = float %15
-     %16 = %17 *. k
-     %19 = float n
-     %18 = %16 /. %19
-     _result = %18
+     pushparam v
+     call sort
+     popparam 
      return
 endfunction
 
 function main
   vars
-    a character 10
-    b boolean 10
-    n integer
-    p float
+    af float 20
+    i integer
   endvars
 
-   %1 = &a
-   pushparam 
-   pushparam %1
-   call read_chars
-   popparam 
-   popparam %2
-   n = %2
-   %3 = &a
-   %4 = &b
-   pushparam n
-   pushparam %3
-   pushparam %4
-   call find_vowels
-   popparam 
-   popparam 
-   popparam 
-   %5 = &a
-   %6 = &b
-   pushparam 
-   pushparam n
-   pushparam %5
-   pushparam %6
-   call write_consonants
-   popparam 
-   popparam 
-   popparam 
-   popparam %7
-   p = %7
-   writef p
-   writes "\n"
-   return
+     %1 = 0
+     i = %1
+  label while1 :
+     %2 = 20
+     %3 = i < %2
+     ifFalse %3 goto endwhile1
+     readf %4
+     af[i] = %4
+     %5 = 1
+     %6 = i + %5
+     i = %6
+     goto while1
+  label endwhile1 :
+     %7 = &af
+     pushparam %7
+     call evenPositivesAndSort
+     popparam 
+     %8 = 0
+     i = %8
+  label while2 :
+     %9 = 20
+     %10 = i < %9
+     ifFalse %10 goto endwhile2
+     %11 = af[i]
+     pushparam 
+     call one
+     popparam %12
+     %13 = %11 ==. %12
+     %13 = not %13
+     ifFalse %13 goto else1
+     %14 = af[i]
+     writef %14
+     %15 = ' '
+     writec %15
+     %16 = 1
+     %17 = i + %16
+     i = %17
+     goto endif1
+  label else1 :
+     %18 = '\n'
+     writec %18
+     return
+  label endif1 :
+     goto while2
+  label endwhile2 :
+     %19 = '\n'
+     writec %19
+     return
 endfunction
 
 
