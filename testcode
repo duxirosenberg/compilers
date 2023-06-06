@@ -1,0 +1,35 @@
+function read_chars
+  params
+    _result integer
+    a character array
+  endparams
+
+  vars
+    i integer
+  endvars
+
+     %6 = '.'
+     %8 = '.'
+     %9 = %6 == %8
+     writei %9
+     %12 = 10
+     _result = %12
+     return
+endfunction
+
+function main
+  vars
+    a character 10
+   
+  endvars
+
+   %1 = &a
+   pushparam 
+   pushparam %1
+   call read_chars
+   popparam 
+   popparam %2
+   return
+endfunction
+
+

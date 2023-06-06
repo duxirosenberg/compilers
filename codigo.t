@@ -15,24 +15,25 @@ function read_chars
      %3 = i < %2
      ifFalse %3 goto endwhile1
      readc %4
-     a[i] = %4
-     %6 = a
-     %5 = %6[i]
-     %7 = '.'
-     %8 = %5 ==. %7
-     %8 = not %8
-     ifFalse %8 goto else1
-     %9 = 1
-     %10 = i + %9
-     i = %10
+     %5 = a
+     %5[i] = %4
+     %7 = a
+     %6 = %7[i]
+     %8 = '.'
+     %9 = %6 == %8
+     %9 = not %9
+     ifFalse %9 goto else1
+     %10 = 1
+     %11 = i + %10
+     i = %11
      goto endif1
   label else1 :
      _result = i
   label endif1 :
      goto while1
   label endwhile1 :
-     %11 = 10
-     _result = %11
+     %12 = 10
+     _result = %12
      return
 endfunction
 
@@ -60,18 +61,18 @@ function find_vowels
      %7 = 1
      %8 = n - %7
      %9 = 'a'
-     %10 = c ==. %9
+     %10 = c == %9
      %11 = 'e'
-     %12 = c ==. %11
+     %12 = c == %11
      %13 = %10 or %12
      %14 = 'i'
-     %15 = c ==. %14
+     %15 = c == %14
      %16 = %13 or %15
      %17 = 'o'
-     %18 = c ==. %17
+     %18 = c == %17
      %19 = %16 or %18
      %20 = 'u'
-     %21 = c ==. %20
+     %21 = c == %20
      %22 = %19 or %21
      %23 = vb
      %23[%8] = %22

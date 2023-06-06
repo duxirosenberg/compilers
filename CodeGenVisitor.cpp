@@ -138,7 +138,7 @@ antlrcpp::Any CodeGenVisitor::visitReturnStmt(AslParser::ReturnStmtContext *ctx)
   std::string           addr = codAtsE.addr;
   // std::string           offs = codAtsE.offs;
   instructionList &     code1 = codAtsE.code;
-  code = code1 || instruction::LOAD("_result",addr); //|| instruction::RETURN();
+  code = code1 || instruction::LOAD("_result",addr)|| instruction::RETURN();
   DEBUG_EXIT();
   return code;
 }
@@ -452,10 +452,15 @@ antlrcpp::Any CodeGenVisitor::visitReadStmt(AslParser::ReadStmtContext *ctx) {
     code = code1 || instruction::READI(temp);
 
   if (isArrayElement) {
-
-
-    
-    code = code || instruction::XLOAD(addr1,offs1,temp);
+    if(Symbols.isLocalVarClass(addr1)){
+        //local array
+        code = code || instruction::XLOAD(addr1, offs1, temp);
+      }else{ //parameter
+        std::string temp2 = "%"+codeCounters.newTEMP();
+        code = code || instruction::LOAD(temp2, addr1)
+                    || instruction::XLOAD(temp2, offs1,temp);
+      }
+    //code = code || instruction::XLOAD(addr1,offs1,temp);
   }
   DEBUG_EXIT();
   return code;
@@ -671,7 +676,10 @@ antlrcpp::Any CodeGenVisitor::visitRelational(AslParser::RelationalContext *ctx)
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
   std::string temp = "%"+codeCounters.newTEMP();
-  if(Types.isIntegerTy(t1) && Types.isIntegerTy(t2)){
+  if((Types.isIntegerTy(t1) && Types.isIntegerTy(t2))
+     or (Types.isCharacterTy(t1) && Types.isCharacterTy(t2))
+     or (Types.isBooleanTy(t1) && Types.isBooleanTy(t2))
+     ){
     //both args are int
     if (ctx->EQ())
       code = code || instruction::EQ(temp, addr1, addr2);
