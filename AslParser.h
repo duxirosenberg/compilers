@@ -12,14 +12,14 @@
 class  AslParser : public antlr4::Parser {
 public:
   enum {
-    T__0 = 1, T__1 = 2, T__2 = 3, ASSIGN = 4, PLUS = 5, SUB = 6, MUL = 7, 
-    DIV = 8, MOD = 9, VAR = 10, ARRAY = 11, INT = 12, FLOAT = 13, CHAR = 14, 
-    BOOL = 15, EQ = 16, NEQ = 17, G = 18, GE = 19, L = 20, LE = 21, AND = 22, 
-    NOT = 23, OR = 24, IF = 25, THEN = 26, ELSE = 27, ENDIF = 28, FUNC = 29, 
-    ENDFUNC = 30, READ = 31, WRITE = 32, WHILE = 33, DO = 34, ENDWHILE = 35, 
-    RETURN = 36, LPAR = 37, RPAR = 38, SEMICOLON = 39, COLON = 40, COMMA = 41, 
-    INTVAL = 42, FLOATVAL = 43, BOOLVAL = 44, CHARVAL = 45, ID = 46, STRING = 47, 
-    COMMENT = 48, WS = 49
+    T__0 = 1, T__1 = 2, T__2 = 3, EXP = 4, ASSIGN = 5, PLUS = 6, SUB = 7, 
+    MUL = 8, DIV = 9, MOD = 10, FAC = 11, VAR = 12, ARRAY = 13, INT = 14, 
+    FLOAT = 15, CHAR = 16, BOOL = 17, EQ = 18, NEQ = 19, G = 20, GE = 21, 
+    L = 22, LE = 23, AND = 24, NOT = 25, OR = 26, IF = 27, THEN = 28, ELSE = 29, 
+    ENDIF = 30, FUNC = 31, ENDFUNC = 32, READ = 33, WRITE = 34, WHILE = 35, 
+    DO = 36, ENDWHILE = 37, RETURN = 38, LPAR = 39, RPAR = 40, SEMICOLON = 41, 
+    COLON = 42, COMMA = 43, INTVAL = 44, FLOATVAL = 45, BOOLVAL = 46, CHARVAL = 47, 
+    ID = 48, STRING = 49, COMMENT = 50, WS = 51
   };
 
   enum {
@@ -326,6 +326,17 @@ public:
    
   };
 
+  class  ExponentialContext : public ExprContext {
+  public:
+    ExponentialContext(ExprContext *ctx);
+
+    antlr4::Token *op = nullptr;
+    std::vector<ExprContext *> expr();
+    ExprContext* expr(size_t i);
+    antlr4::tree::TerminalNode *EXP();
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
   class  FunctionCallContext : public ExprContext {
   public:
     FunctionCallContext(ExprContext *ctx);
@@ -337,6 +348,16 @@ public:
     ExprContext* expr(size_t i);
     std::vector<antlr4::tree::TerminalNode *> COMMA();
     antlr4::tree::TerminalNode* COMMA(size_t i);
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  FactorialContext : public ExprContext {
+  public:
+    FactorialContext(ExprContext *ctx);
+
+    antlr4::Token *op = nullptr;
+    ExprContext *expr();
+    antlr4::tree::TerminalNode *FAC();
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 

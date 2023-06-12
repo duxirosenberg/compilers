@@ -90,6 +90,9 @@ public:
   antlrcpp::Any visitIdent(AslParser::IdentContext *ctx);
   antlrcpp::Any visitArrayAccess(AslParser::ArrayAccessContext *ctx);
 
+  antlrcpp::Any visitFactorial(AslParser::FactorialContext *ctx);
+  antlrcpp::Any visitExponential(AslParser::ExponentialContext *ctx);
+
 private:
 
   // Attributes

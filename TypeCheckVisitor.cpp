@@ -323,6 +323,7 @@ antlrcpp::Any TypeCheckVisitor::visitRelational(AslParser::RelationalContext *ct
   if ((not Types.isErrorTy(t1)) and (not Types.isErrorTy(t2)) and
       (not Types.comparableTypes(t1, t2, oper)))
     Errors.incompatibleOperator(ctx->op);
+  
   TypesMgr::TypeId t = Types.createBooleanTy();
 
 /*     //DEBUG
@@ -408,15 +409,14 @@ antlrcpp::Any TypeCheckVisitor::visitUnary(AslParser::UnaryContext *ctx){
   DEBUG_ENTER();
   visit(ctx->expr());
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr());
+  TypesMgr::TypeId t;
 
   //differntiatie between NOT and SUB/PLUS
   if(ctx->NOT()){
+    t = Types.createBooleanTy();
     if(not Types.isErrorTy(t1) and not Types.isBooleanTy(t1)){
       //print t1 type error
       Errors.incompatibleOperator(ctx->op);
-    }
-    else{
-      t1 = Types.createBooleanTy();
     }
   }else{
     //operator is SUB or PLUS
@@ -424,19 +424,32 @@ antlrcpp::Any TypeCheckVisitor::visitUnary(AslParser::UnaryContext *ctx){
       Errors.incompatibleOperator(ctx->op);
     }
     if(Types.isFloatTy(t1)){
-      t1 = Types.createFloatTy();
+      t = Types.createFloatTy();
     }else{
-      t1 = Types.createIntegerTy();
+      t = Types.createIntegerTy();
     }
   }
   
   
-  putTypeDecor(ctx, t1);
+  putTypeDecor(ctx, t);
   putIsLValueDecor(ctx, false);
   DEBUG_EXIT();
   return 0;
 }
 
+antlrcpp::Any TypeCheckVisitor::visitFactorial(AslParser::FactorialContext *ctx){
+  DEBUG_ENTER();
+    visit(ctx->expr());
+    TypesMgr::TypeId t1 = getTypeDecor(ctx->expr());
+    if(not Types.isErrorTy(t1) and not Types.isIntegerTy(t1)){
+      Errors.incompatibleOperator(ctx->op);
+    }
+    TypesMgr::TypeId t = Types.createIntegerTy();
+    putTypeDecor(ctx, t);
+    putIsLValueDecor(ctx, false);
+  DEBUG_EXIT();
+  return 0;
+}
 
 antlrcpp::Any TypeCheckVisitor::visitLogical(AslParser::LogicalContext *ctx){
   DEBUG_ENTER();
@@ -459,6 +472,30 @@ antlrcpp::Any TypeCheckVisitor::visitLogical(AslParser::LogicalContext *ctx){
  */
   putTypeDecor(ctx, t);
   putIsLValueDecor(ctx, false);
+  DEBUG_EXIT();
+  return 0;
+}
+
+
+antlrcpp::Any TypeCheckVisitor::visitExponential(AslParser::ExponentialContext *ctx){
+  DEBUG_ENTER();
+  visit(ctx->expr(0));
+  visit(ctx->expr(1));
+
+  TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
+  TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
+  TypesMgr::TypeId t = Types.createFloatTy();
+
+  //check types are numerical and exp is integer
+  if (((not Types.isErrorTy(t1)) and (not Types.isNumericTy(t1))) or
+        ((not Types.isErrorTy(t2)) and (not Types.isIntegerTy(t2))))
+      Errors.incompatibleOperator(ctx->op);
+  
+  putTypeDecor(ctx, t);
+  putIsLValueDecor(ctx, false); 
+
+
+  
   DEBUG_EXIT();
   return 0;
 }

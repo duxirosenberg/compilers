@@ -103,7 +103,9 @@ left_expr
 
 // Grammar for expressions with boolean, relational and aritmetic operators
 // Grammar for expressions with boolean, relational and aritmetic operators
-expr    : LPAR expr RPAR                      # parenthesis
+expr    : expr op=FAC                         # factorial
+        | expr op=EXP expr                    # exponential
+        | LPAR expr RPAR                      # parenthesis
         | ident '[' expr ']'                  # arrayAccess
         | ident '(' (expr (COMMA expr)*)? ')' # functionCall
         | op= (NOT|PLUS|SUB) expr             # unary
@@ -124,12 +126,14 @@ ident   : ID
 /// Lexer Rules
 //////////////////////////////////////////////////
 
+EXP       : '**';
 ASSIGN    : '=' ;
 PLUS      : '+' ;
 SUB       : '-' ;
 MUL       : '*';
 DIV       : '/';
 MOD       : '%';
+FAC       : '!';
 
 VAR       : 'var';
 ARRAY     : 'array';

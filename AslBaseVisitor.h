@@ -87,7 +87,15 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitExponential(AslParser::ExponentialContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitFunctionCall(AslParser::FunctionCallContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitFactorial(AslParser::FactorialContext *ctx) override {
     return visitChildren(ctx);
   }
 

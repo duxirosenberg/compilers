@@ -302,6 +302,110 @@ antlrcpp::Any CodeGenVisitor::visitWhileStmt(AslParser::WhileStmtContext *ctx){
   return code;  
 }
 
+antlrcpp::Any CodeGenVisitor::visitExponential(AslParser::ExponentialContext *ctx){
+  DEBUG_ENTER();
+  instructionList code;
+
+  CodeAttribs     && codAtsE1 = visit(ctx->expr(0));
+  std::string          addr1 = codAtsE1.addr;
+  instructionList &    code1 = codAtsE1.code;
+
+  CodeAttribs     && codAtsE2 = visit(ctx->expr(1));
+  std::string          addr2 = codAtsE2.addr;
+  instructionList &    code2 = codAtsE2.code;
+
+
+
+  std::string res = "%"+codeCounters.newTEMP();
+  std::string base = "%"+codeCounters.newTEMP();
+  std::string exp = "%"+codeCounters.newTEMP();
+
+  code = code1 || code2;
+  code = code || instruction::ILOAD(exp, addr2);
+  
+  if(Types.isIntegerTy(getTypeDecor(ctx->expr(0)))){
+    std::string temp = "%"+codeCounters.newTEMP();
+    code = code || instruction::FLOAT(base,addr1);
+  }else{ //float base
+    code = code || instruction::FLOAD(base,addr1);
+  }
+
+  //implement while loop
+  std::string iter = "%"+codeCounters.newTEMP();
+  std::string test = "%"+codeCounters.newTEMP();
+  std::string one = "%"+codeCounters.newTEMP();
+
+  std::string label = "while"+codeCounters.newLabelWHILE()+"_exponential"; 
+  std::string labelEndWhile = "end"+label;
+  code = code || instruction::ILOAD(iter,exp) ||
+            instruction::ILOAD(one,"1") ||
+            instruction::FLOAT(res, one) ||
+            instruction::LABEL(label) ||
+            instruction::LE(test,one,iter) ||
+            instruction::FJUMP(test,labelEndWhile) ||
+            instruction::FMUL(res,res,base) ||
+            instruction::SUB(iter,iter,one)  ||
+            instruction::UJUMP(label) ||
+            instruction::LABEL(labelEndWhile);
+
+  CodeAttribs codAts(res, "", code);
+  DEBUG_EXIT();
+  return codAts;
+}
+
+
+
+
+
+
+
+
+
+antlrcpp::Any CodeGenVisitor::visitFactorial(AslParser::FactorialContext *ctx){
+  DEBUG_ENTER();
+  instructionList code;
+  CodeAttribs     && codAtsE = visit(ctx->expr());
+  std::string          addr1 = codAtsE.addr;
+  instructionList &    code1 = codAtsE.code;
+
+  std::string start = "%"+codeCounters.newTEMP();
+  std::string res = "%"+codeCounters.newTEMP();
+  std::string test = "%"+codeCounters.newTEMP();
+  std::string one = "%"+codeCounters.newTEMP();
+  std::string zero = "%"+codeCounters.newTEMP();
+
+  code = code1 || instruction::ILOAD(res, "1");
+  code = code || instruction::ILOAD(one, "1");
+  code = code || instruction::ILOAD(zero, "0");
+  code = code || instruction::LOAD(start, addr1);
+
+
+
+  std::string labelwhile = "while"+codeCounters.newLabelWHILE() + "_factorial";
+  std::string labelEndWhile = "end"+labelwhile;
+  
+  //if n>0 jump to while loop otherwise HALT and jump to endwhile
+  code = code || instruction::LT(test,start,zero) || 
+          instruction::FJUMP(test,labelwhile) ||
+          instruction::LABEL("negative_operator") ||
+          instruction::HALT(code::INVALID_INTEGER_OPERAND) ||
+          instruction::UJUMP(labelEndWhile);
+
+  
+  code = code || instruction::LABEL(labelwhile) ||
+         instruction::LE(test,one,start) || 
+         instruction::FJUMP(test,labelEndWhile) ||
+         instruction::MUL(res,res,start) || 
+         instruction::SUB(start,start,one) ||
+         instruction::UJUMP(labelwhile) || 
+         instruction::LABEL(labelEndWhile);
+
+  CodeAttribs codAts(res, "", code);
+
+  DEBUG_EXIT();
+  return codAts;
+}
+
 antlrcpp::Any CodeGenVisitor::visitIfStmt(AslParser::IfStmtContext *ctx) {
   DEBUG_ENTER();
   instructionList code;

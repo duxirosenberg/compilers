@@ -91,6 +91,10 @@ public:
 
   TypesMgr::TypeId  getTypeDecor     (antlr4::ParserRuleContext *ctx);
 
+  antlrcpp::Any visitFactorial(AslParser::FactorialContext *ctx);
+  antlrcpp::Any visitExponential(AslParser::ExponentialContext *ctx);
+
+
 
 
 private:
